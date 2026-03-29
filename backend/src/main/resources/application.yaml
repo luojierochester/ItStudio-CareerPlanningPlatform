@@ -1,4 +1,38 @@
 spring:
+  webflux:
+    base-path: /
+  
+  mail:
+    host: smtp.qq.com
+    username: 2205632953@qq.com
+    password: dfiephiybesxdihf
+    port: 465
+    protocol: smtp
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.timeout: 5000
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    virtual-host: /
+    username: admin
+    password: 123456
+
   application:
-    # noinspection SpellCheckingInspection
     name: careerpp
+
+  security:
+    jwt:
+      key: 2837452984690238475628394756203847562038475
+      expire-hours: 168
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/careerpp
+    username: careerpp
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  type-handlers-package: com.itstudio.careerpp.config
