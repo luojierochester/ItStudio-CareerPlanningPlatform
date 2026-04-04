@@ -16,7 +16,7 @@
 
 部分`/api/test`的返回值不遵循上述格式
 
-## /auth
+## /v1/auth
 
 ### POST /login
 
