@@ -1,33 +1,47 @@
 package com.itstudio.careerpp.service.v1
 
+import com.itstudio.careerpp.entity.dto.UserFile
+import com.itstudio.careerpp.service.AccountService
+import com.itstudio.careerpp.service.UserFileService
+import com.itstudio.careerpp.utils.JwtUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.codec.multipart.FilePart
 import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
 import reactor.core.publisher.Mono
-import java.io.File
-import java.util.*
+import java.nio.file.Paths
 
 @Service
 class FileUploadService(
+    private val userFileService: UserFileService,
+    private val accountService: AccountService,
+    private val jwtUtils: JwtUtils,
+
     @Value($$"${app.file.direction}")
     private val fileDir: String
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun saveFile(file: MultipartFile): Mono<String> {
-        val originalName = file.originalFilename ?: "unknown"
-        val extension = originalName.substringAfterLast(".", "")
-        val safeFileName = "${UUID.randomUUID()}.$extension"
+    fun saveFile(file: FilePart, header: String?): Mono<String> {
+        val extension = file.filename().substringAfterLast(".", "")
+        val username = jwtUtils.headerToUsername(header)!!
 
-        try {
-            val targetFile = File("$fileDir/$safeFileName")
-            file.transferTo(targetFile)
-        } catch (e: Exception) {
-            logger.error("Error while saving file", e)
-            return Mono.just("Error while saving file")
-        }
-        
-        return Mono.just("")
+        return accountService
+            .findAccountByNameOrEmail(username)
+            .flatMap { account ->
+                userFileService.saveFile(
+                    Mono.just(account),
+                    UserFile::testFile
+                )
+                    .flatMap { uuid ->
+                        val path = Paths.get("$fileDir/$uuid.$extension")
+                        file.transferTo(path)
+                            .then(Mono.just(""))
+                            .onErrorResume { e ->
+                                logger.warn(e.message)
+                                Mono.just(e.message ?: "Unknown Error")
+                            }
+                    }
+            }
     }
 }

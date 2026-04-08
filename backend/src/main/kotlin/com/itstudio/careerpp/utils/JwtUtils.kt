@@ -57,10 +57,10 @@ class JwtUtils(
             val decodedJWT = jwtVerifier.verify(token)
             if (this.isInvalidToken(decodedJWT.id)) return null
             val expiresAt = decodedJWT.expiresAt
-            
+
             return if (Date().after(expiresAt)) null
             else decodedJWT
-            
+
         } catch (e: Exception) {
             println(e.message)
             return null
@@ -104,4 +104,10 @@ class JwtUtils(
 
     fun convertToToken(headerToken: String?): String? =
         headerToken?.replace("Bearer ", "")
+
+    fun headerToUsername(headerToken: String?): String? {
+        val jwt = resolveJwt(headerToken) ?: return null
+        val user = toUser(jwt)
+        return user.username
+    }
 }
