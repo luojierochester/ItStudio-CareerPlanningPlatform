@@ -5,7 +5,6 @@ import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
 
-
 @Component
 class TestHandler : WebSocketHandler {
     override fun handle(session: WebSocketSession): Mono<Void> {

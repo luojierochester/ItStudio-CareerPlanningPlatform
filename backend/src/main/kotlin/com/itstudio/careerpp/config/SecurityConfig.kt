@@ -54,9 +54,11 @@ class SecurityConfig(
                     ).authenticated()
                     .pathMatchers(
                         "/api/auth/**",
+                        "/ws/**",
                         "/error"
                     ).permitAll()
-                    .anyExchange().authenticated()
+                    .anyExchange()
+                    .authenticated()
             }
             .addFilterAt(loginAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
             .addFilterAt(jwtAuthorizeFilter, SecurityWebFiltersOrder.AUTHENTICATION)
@@ -85,7 +87,7 @@ class SecurityConfig(
     fun loginAuthenticationFilter(): AuthenticationWebFilter {
         val filter = AuthenticationWebFilter(reactiveAuthenticationManager())
         filter.setRequiresAuthenticationMatcher(
-            ServerWebExchangeMatchers.pathMatchers("/api/auth/login")
+            ServerWebExchangeMatchers.pathMatchers("/api/v1/auth/login")
         )
         filter.setServerAuthenticationConverter(loginAuthenticationConverter())
         filter.setAuthenticationSuccessHandler { webFilterExchange, authentication ->
