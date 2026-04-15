@@ -3,7 +3,7 @@ package com.itstudio.careerpp.entity.dto
 import com.baomidou.mybatisplus.annotation.IdType
 import com.baomidou.mybatisplus.annotation.TableId
 import com.baomidou.mybatisplus.annotation.TableName
-import com.github.sor2171.backend.entity.DataCopy
+import com.itstudio.careerpp.entity.DataCopy
 import kotlinx.datetime.LocalDateTime
 
 @TableName("account")

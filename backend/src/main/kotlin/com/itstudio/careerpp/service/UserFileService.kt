@@ -10,5 +10,5 @@ import kotlin.reflect.KMutableProperty1
 interface UserFileService : IService<UserFile> {
     fun saveFile(accountMono: Mono<Account>, fileType: KMutableProperty1<UserFile, UUID?>): Mono<UUID>
     fun findFile(accountMono: Mono<Account>, fileType: KMutableProperty1<UserFile, UUID?>): Mono<UUID>
-    fun exists(accountMono: Mono<Account>, fileType: KMutableProperty1<UserFile, UUID?>): Mono<Boolean>
+    fun exists(accountMono: Mono<Account>): Mono<Boolean>
 }

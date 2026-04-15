@@ -5,6 +5,6 @@ import java.util.*
 
 @TableName("user_file")
 data class UserFile(
-    val id: Int = 1,
+    val id: Int? = null,
     var testFile: UUID? = null, 
 )

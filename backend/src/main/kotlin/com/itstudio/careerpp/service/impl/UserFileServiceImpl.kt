@@ -60,8 +60,7 @@ class UserFileServiceImpl : ServiceImpl<UserFileMapper, UserFile>(), UserFileSer
      * @return 返回数据库中是否存在属于account的行
      */
     override fun exists(
-        accountMono: Mono<Account>,
-        fileType: KMutableProperty1<UserFile, UUID?>
+        accountMono: Mono<Account>
     ): Mono<Boolean> {
         return accountMono
             .flatMap { existUserFileOne(it) }

@@ -1,4 +1,4 @@
-package com.github.sor2171.backend.entity
+package com.itstudio.careerpp.entity
 
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
