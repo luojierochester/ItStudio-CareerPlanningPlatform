@@ -1,4 +1,0 @@
-echo feature_1,feature_2,feature_3,feature_4,feature_5,label > data/features_example.csv
-echo 0.1,0.2,0.3,0.4,0.5,0 >> data/features_example.csv
-echo 0.2,0.3,0.4,0.5,0.6,1 >> data/features_example.csv
-echo 0.3,0.4,0.5,0.6,0.7,0 >> data/features_example.csv
