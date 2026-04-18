@@ -16,19 +16,19 @@ pip install -r requirements.txt
 
 3.项目结构
 
-├── api.py                      # FastAPI 服务入口
-├── db_models.py                # SQLAlchemy 数据库模型
-├── encode_jobs_db.py           # 岗位编码并写入 SQLite / 构建 FAISS 索引
-├── feature_engineering_db.py  # 特征工程（从 features_examples.csv 读取词典）
-├── inference_pipeline_db.py   # 核心推理引擎 RecommendationEngine
-├── direct_inference.py        # 命令行演示脚本（复用 RecommendationEngine）
-├── train_bi_encoder.py        # 双塔模型训练
-├── train_lgb.py               # LightGBM 精排模型训练
-├── features_examples.csv      # 特征关键词外部词典
-├── requirements.txt
-├── run_demo.sh                # 一键演示脚本
-├── CHANGELOG.md
-└── README.md
+├── api.py                      # FastAPI 服务入口  
+├── db_models.py                # SQLAlchemy 数据库模型  
+├── encode_jobs_db.py           # 岗位编码并写入 SQLite / 构建 FAISS 索引  
+├── feature_engineering_db.py  # 特征工程（从 features_examples.csv 读取词典）  
+├── inference_pipeline_db.py   # 核心推理引擎 RecommendationEngine  
+├── direct_inference.py        # 命令行演示脚本（复用 RecommendationEngine）  
+├── train_bi_encoder.py        # 双塔模型训练  
+├── train_lgb.py               # LightGBM 精排模型训练  
+├── features_examples.csv      # 特征关键词外部词典  
+├── requirements.txt  
+├── run_demo.sh                # 一键演示脚本  
+├── CHANGELOG.md  
+└── README.md  
 
 4.特征词典
 
