@@ -37,6 +37,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("tools.jackson.module:jackson-module-kotlin")
+    implementation("org.apache.pdfbox:pdfbox:3.0.3")
+    implementation("org.apache.poi:poi-ooxml:5.3.0")
     runtimeOnly("com.mysql:mysql-connector-j")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

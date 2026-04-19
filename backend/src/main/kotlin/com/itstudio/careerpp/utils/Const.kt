@@ -13,6 +13,7 @@ object Const {
     const val FLOW_LIMIT_BLOCK = "flow:block:"
 
     const val WS_CHAT_TICKET = "chat_ticket:"
+    const val RESUME_TEXT_CACHE = "resume:text:"
     
     val INTERNAL_ERROR_MONO = Mono.just("something went wrong. Please contact the administrator.")
 }
