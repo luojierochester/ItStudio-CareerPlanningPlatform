@@ -40,3 +40,5 @@ mybatis-plus:
 app:
   file:
     direction: /root/temp/saveFileTest
+  algorithm:
+    url: http://localhost:8001

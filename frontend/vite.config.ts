@@ -6,10 +6,14 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080', // 你们后端的真实地址
+        target: 'http://localhost:8080',
         changeOrigin: true,
-        // 如果你们后端的接口本来就没有 /api 前缀，需要用下面这行重写；如果有，就注释掉下面这行
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        // 后端 Controller 已带 /api 前缀，不做 rewrite
+      },
+      '/ws': {
+        target: 'ws://localhost:8080',
+        ws: true,
+        changeOrigin: true,
       },
     },
   },
