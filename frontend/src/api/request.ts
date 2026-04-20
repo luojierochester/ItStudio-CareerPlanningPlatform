@@ -25,6 +25,11 @@ request.interceptors.request.use(
 // 3. 响应拦截器：自动解包与全局报错
 request.interceptors.response.use(
     (response) => {
+        // 文件下载（blob）响应直接返回
+        if (response.config.responseType === 'blob') {
+            return response.data;
+        }
+
         // 拦截部分不守规矩的特殊接口 (如你文档里提到的 /test)
         if (response.config.url?.includes('/test/')) {
             return response.data;

@@ -48,3 +48,6 @@ app:
 
   algorithm:
     url: http://localhost:8001
+
+  ai-chat:
+    url: ws://localhost:8002
