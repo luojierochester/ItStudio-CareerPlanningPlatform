@@ -35,10 +35,10 @@ const AppLayout: React.FC = () => {
                         </div>
                         <nav className="nav-menu">
                             <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-                                <i className="icon">⊚</i><span>全景解析舱</span>
-                            </NavLink>
-                            <NavLink to="/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                                 <i className="icon">⎔</i><span>简历智算中心</span>
+                            </NavLink>
+                            <NavLink to="/panorama" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                                <i className="icon">⊚</i><span>全景解析舱</span>
                             </NavLink>
                         </nav>
                     </div>
@@ -84,7 +84,7 @@ const AppLayout: React.FC = () => {
             </div>
 
             {/* 只有在非简历中心才显示底部全局对话框 */}
-            {location.pathname !== '/profile' && (
+            {location.pathname !== '/' && (
                 <div className="ai-omnibar-container">
                     <div className={`ai-omnibar ${isThinking ? 'thinking' : ''}`}>
                         <i className="ai-icon">✨</i>

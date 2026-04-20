@@ -602,6 +602,90 @@ html {
   box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
 }
 
+/* ===== AI 格式化内容 ===== */
+.formatted-ai .chat-para {
+  margin: 0 0 8px 0;
+  line-height: 1.7;
+}
+
+.formatted-ai .chat-para:last-child {
+  margin-bottom: 0;
+}
+
+.formatted-ai .chat-heading {
+  margin: 12px 0 6px 0;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.formatted-ai h4.chat-heading {
+  font-size: 15px;
+}
+
+.formatted-ai h5.chat-heading {
+  font-size: 14px;
+}
+
+.formatted-ai .chat-list {
+  margin: 6px 0 10px 0;
+  padding-left: 20px;
+}
+
+.formatted-ai .chat-list li {
+  margin-bottom: 4px;
+  line-height: 1.6;
+}
+
+.formatted-ai .chat-inline-code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 12.5px;
+}
+
+.formatted-ai .chat-code-block {
+  position: relative;
+  margin: 10px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1e1e2e;
+}
+
+.formatted-ai .chat-code-block .code-lang {
+  display: block;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  background: rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.formatted-ai .chat-code-block pre {
+  margin: 0;
+  padding: 14px;
+  overflow-x: auto;
+}
+
+.formatted-ai .chat-code-block code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+.formatted-ai strong {
+  font-weight: 700;
+  color: inherit;
+}
+
+.formatted-ai em {
+  font-style: italic;
+  opacity: 0.9;
+}
+
 .chat-input-area {
   padding: 20px;
   border-top: none;
@@ -1066,6 +1150,24 @@ body.dark-mode .ai-bubble .message-content {
   color: #d4d4d8;
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+body.dark-mode .formatted-ai .chat-inline-code {
+  background: rgba(255, 255, 255, 0.08);
+  color: #a5f3fc;
+}
+
+body.dark-mode .formatted-ai .chat-code-block {
+  background: #111118;
+}
+
+body.dark-mode .formatted-ai .chat-code-block .code-lang {
+  color: #71717a;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+body.dark-mode .formatted-ai .chat-code-block code {
+  color: #d4d4d8;
 }
 
 body.dark-mode .user-bubble .avatar {

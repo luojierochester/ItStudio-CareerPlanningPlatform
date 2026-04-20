@@ -50,10 +50,10 @@ class SecurityConfig(
             .authorizeExchange {
                 it
                     .pathMatchers(
-                        "/api/auth/relogin"
+                        "/api/v1/auth/relogin"
                     ).authenticated()
                     .pathMatchers(
-                        "/api/auth/**",
+                        "/api/v1/auth/**",
                         "/ws/**",
                         "/error"
                     ).permitAll()

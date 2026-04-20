@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { resumeApi } from '../api/resume';
 import { fetchResumeDetail } from '../api/mock';
 import { useAiChat } from '../hooks/useAiChat';
+import { formatChatContent } from '../utils/formatChat';
 import type { ResumeDetail } from '../api/types';
 
 const ACCEPTED_TYPES = '.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
@@ -188,8 +189,14 @@ const Profile: React.FC = () => {
                                 <div key={index} className={`chat-bubble ${msg.role === 'ai' ? 'ai-bubble' : 'user-bubble'}`}>
                                     <div className="avatar">{msg.role === 'ai' ? '🤖' : '🧑‍🎓'}</div>
                                     <div className="message-content">
-                                        {msg.content}
-                                        {msg.streaming && <span className="typing-cursor">▍</span>}
+                                        {msg.role === 'ai' ? (
+                                            <>
+                                                <div className="formatted-ai" dangerouslySetInnerHTML={{ __html: formatChatContent(msg.content) }} />
+                                                {msg.streaming && <span className="typing-cursor">▍</span>}
+                                            </>
+                                        ) : (
+                                            msg.content
+                                        )}
                                     </div>
                                 </div>
                             ))}
