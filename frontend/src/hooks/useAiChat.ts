@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ChatMessage } from '../api/types';
 import { chatApi } from '../api/chat';
+import { getAccountIdFromToken } from '../utils/jwt';
 
 /* ---------- 常量 ---------- */
 // 开发环境走 Vite proxy（当前 host），生产环境直连后端 WS 地址
@@ -22,7 +23,7 @@ export interface UseAiChatReturn {
     /** 手动断开连接 */
     disconnect: () => void;
     /** 手动(重新)连接 */
-    connect: () => void;
+    connect: (hasFile?: boolean) => void;
 }
 
 export function useAiChat(): UseAiChatReturn {
@@ -35,6 +36,8 @@ export function useAiChat(): UseAiChatReturn {
     const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     /** 标记是否由用户主动断开（主动断开不重连） */
     const intentionalClose = useRef(false);
+    /** 保存 hasFile 状态用于重连 */
+    const hasFileRef = useRef(false);
 
     /* ----- 心跳 ----- */
     const startHeartbeat = useCallback(() => {
@@ -54,12 +57,13 @@ export function useAiChat(): UseAiChatReturn {
     }, []);
 
     /* ----- 核心连接 ----- */
-    const connectWs = useCallback(async () => {
+    const connectWs = useCallback(async (hasFile: boolean = false) => {
         // 如果已经在连接或已连接，直接返回
         if (wsRef.current && wsRef.current.readyState <= WebSocket.OPEN) return;
 
         setStatus('connecting');
         intentionalClose.current = false;
+        hasFileRef.current = hasFile;
 
         let uuid: string;
         try {
@@ -71,7 +75,17 @@ export function useAiChat(): UseAiChatReturn {
             uuid = crypto.randomUUID();
         }
 
-        const ws = new WebSocket(`${WS_BASE}/ws/v1/ai-chat?uuid=${encodeURIComponent(uuid)}`);
+        // 获取用户 ID
+        const userId = getAccountIdFromToken();
+
+        // 构建 WebSocket URL
+        let wsUrl = `${WS_BASE}/ws/v1/ai-chat?uuid=${encodeURIComponent(uuid)}`;
+        wsUrl += `&has_file=${hasFile}`;
+        if (userId !== null) {
+            wsUrl += `&user_id=${userId}`;
+        }
+
+        const ws = new WebSocket(wsUrl);
         wsRef.current = ws;
 
         ws.onopen = () => {
@@ -124,7 +138,7 @@ export function useAiChat(): UseAiChatReturn {
             if (!intentionalClose.current && reconnectAttempts.current < MAX_RECONNECT_ATTEMPTS) {
                 const delay = Math.min(RECONNECT_BASE_DELAY * 2 ** reconnectAttempts.current, MAX_RECONNECT_DELAY);
                 reconnectAttempts.current += 1;
-                reconnectTimer.current = setTimeout(() => connectWs(), delay);
+                reconnectTimer.current = setTimeout(() => connectWs(hasFileRef.current), delay);
             }
         };
     }, [startHeartbeat, stopHeartbeat]);

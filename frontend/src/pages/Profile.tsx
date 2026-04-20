@@ -37,8 +37,8 @@ const Profile: React.FC = () => {
             }
             setResumeData(parsed);
 
-            // 建立 WebSocket 连接
-            connect();
+            // 建立 WebSocket 连接（有简历）
+            connect(true);
 
             setCurrentStatus('ready');
         } catch (e: any) {
@@ -62,7 +62,7 @@ const Profile: React.FC = () => {
 
     // 跳过上传，直接进入 AI 引导模式
     const skipToReady = () => {
-        connect();
+        connect(false);
         setCurrentStatus('ready');
     };
 

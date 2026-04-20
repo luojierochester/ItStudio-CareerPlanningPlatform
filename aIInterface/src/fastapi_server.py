@@ -62,14 +62,12 @@ def get_client() -> AsyncOpenAI:
     if MODEL_TYPE == "local":
         return AsyncOpenAI(
             api_key="ollama",  # llama.cpp/Ollama不需要真实key
-            base_url=LOCAL_BASE_URL,
-            http_client=None  # 避免 proxies 参数问题
+            base_url=LOCAL_BASE_URL
         )
     else:
         return AsyncOpenAI(
             api_key=EXTERNAL_API_KEY,
-            base_url=EXTERNAL_BASE_URL,
-            http_client=None  # 避免 proxies 参数问题
+            base_url=EXTERNAL_BASE_URL
         )
 
 def get_model_name() -> str:
