@@ -58,9 +58,23 @@ export function useAiChat(): UseAiChatReturn {
 
     /* ----- 核心连接 ----- */
     const connectWs = useCallback(async (hasFile: boolean = false) => {
-        // 如果已经在连接或已连接，直接返回
-        if (wsRef.current && wsRef.current.readyState <= WebSocket.OPEN) return;
+        // 如果已经在连接或已连接，先断开再重连（允许切换 hasFile 状态）
+        if (wsRef.current && wsRef.current.readyState <= WebSocket.OPEN) {
+            // 如果 hasFile 状态相同，直接返回
+            if (hasFileRef.current === hasFile) {
+                console.log('⚠️ WebSocket 已连接且状态相同，跳过重连');
+                return;
+            }
+            // hasFile 状态不同，需要断开重连
+            console.log(`🔄 hasFile 状态变化 (${hasFileRef.current} → ${hasFile})，断开并重连`);
+            intentionalClose.current = true;
+            wsRef.current.close();
+            wsRef.current = null;
+            // 等待连接完全关闭
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
 
+        console.log(`🔌 开始建立 WebSocket 连接 (has_file=${hasFile})`);
         setStatus('connecting');
         intentionalClose.current = false;
         hasFileRef.current = hasFile;

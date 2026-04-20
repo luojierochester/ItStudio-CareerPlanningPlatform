@@ -9,7 +9,7 @@ from pathlib import Path
 # 设置环境变量（可根据需要修改）
 os.environ.setdefault("MODEL_TYPE", "external")  # 或 "local"
 os.environ.setdefault("EXTERNAL_API_KEY", "sk-mvzmmntpjvhiihcotelnytqqvltecoiqvydmywqquqcxxqfm")
-os.environ.setdefault("EXTERNAL_BASE_URL", "https://api.siliconflow.cn/v1/chat/completions")
+os.environ.setdefault("EXTERNAL_BASE_URL", "https://api.siliconflow.cn/v1/")
 os.environ.setdefault("EXTERNAL_MODEL", "deepseek-ai/DeepSeek-V3.2")
 os.environ.setdefault("PORT", "8002")
 

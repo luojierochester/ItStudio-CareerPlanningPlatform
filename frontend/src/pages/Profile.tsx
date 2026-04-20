@@ -62,6 +62,7 @@ const Profile: React.FC = () => {
     const onFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+        console.log('📁 用户选择了文件:', file.name);
         e.target.value = '';
         handleUpload(file);
     };
@@ -74,6 +75,7 @@ const Profile: React.FC = () => {
 
     // 跳过上传，直接进入 AI 引导模式
     const skipToReady = () => {
+        console.log('⏭️ 用户跳过上传，直接进入 AI 引导模式');
         connect(false);
         setCurrentStatus('ready');
     };
