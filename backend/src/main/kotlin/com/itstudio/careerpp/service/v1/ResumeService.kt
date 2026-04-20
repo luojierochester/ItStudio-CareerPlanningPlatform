@@ -1,6 +1,9 @@
 package com.itstudio.careerpp.service.v1
 
+import com.itstudio.careerpp.entity.dto.UserFile
 import com.itstudio.careerpp.entity.vo.response.*
+import com.itstudio.careerpp.service.AccountService
+import com.itstudio.careerpp.service.UserFileService
 import com.itstudio.careerpp.utils.Const
 import com.itstudio.careerpp.utils.JwtUtils
 import org.apache.pdfbox.Loader
@@ -20,11 +23,14 @@ import reactor.core.scheduler.Schedulers
 import java.io.ByteArrayInputStream
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.*
 
 @Service
 class ResumeService(
     private val jwtUtils: JwtUtils,
     private val redisTemplate: ReactiveStringRedisTemplate,
+    private val userFileService: UserFileService,
+    private val accountService: AccountService,
     @Value("\${app.file.direction}")
     private val fileDir: String,
     @Value("\${app.algorithm.url:http://localhost:8001}")
@@ -40,30 +46,40 @@ class ResumeService(
      */
     fun uploadAndParse(file: FilePart, header: String?): Mono<ResumeParseVO> {
         val extension = file.filename().substringAfterLast(".", "").lowercase()
-        val accountId = getAccountIdFromHeader(header)
+        val username = jwtUtils.headerToUsername(header)
             ?: return Mono.error(RuntimeException("Invalid token"))
 
-        return DataBufferUtils.join(file.content())
-            .flatMap { dataBuffer ->
-                val bytes = ByteArray(dataBuffer.readableByteCount())
-                dataBuffer.read(bytes)
-                DataBufferUtils.release(dataBuffer)
+        return accountService.findAccountByNameOrEmail(username)
+            .flatMap { account ->
+                val accountId = account.id ?: return@flatMap Mono.error(RuntimeException("Account ID is null"))
 
-                // 保存文件 + 提取文本（阻塞 IO，切到弹性线程池）
-                Mono.fromCallable {
-                    val dirPath = Paths.get(fileDir)
-                    if (!Files.exists(dirPath)) Files.createDirectories(dirPath)
-                    Files.write(dirPath.resolve("resume_${accountId}.${extension}"), bytes)
-                    extractText(bytes, extension)
-                }.subscribeOn(Schedulers.boundedElastic())
+                // 使用 UserFileService 生成 UUID 并保存到数据库
+                userFileService.saveFile(Mono.just(account), UserFile::resumeFile)
+                    .flatMap { uuid ->
+                        DataBufferUtils.join(file.content())
+                            .flatMap { dataBuffer ->
+                                val bytes = ByteArray(dataBuffer.readableByteCount())
+                                dataBuffer.read(bytes)
+                                DataBufferUtils.release(dataBuffer)
+
+                                // 保存文件 + 提取文本（阻塞 IO，切到弹性线程池）
+                                Mono.fromCallable {
+                                    val dirPath = Paths.get(fileDir)
+                                    if (!Files.exists(dirPath)) Files.createDirectories(dirPath)
+                                    // 使用 UUID 作为文件名
+                                    Files.write(dirPath.resolve("$uuid.$extension"), bytes)
+                                    extractText(bytes, extension)
+                                }.subscribeOn(Schedulers.boundedElastic())
+                            }
+                            .flatMap { rawText ->
+                                // 缓存原文到 Redis（使用 accountId 作为键）
+                                redisTemplate.opsForValue()
+                                    .set("${Const.RESUME_TEXT_CACHE}$accountId", rawText)
+                                    .thenReturn(rawText)
+                            }
+                            .map { parseResumeText(it) }
+                    }
             }
-            .flatMap { rawText ->
-                // 缓存原文到 Redis
-                redisTemplate.opsForValue()
-                    .set("${Const.RESUME_TEXT_CACHE}$accountId", rawText)
-                    .thenReturn(rawText)
-            }
-            .map { parseResumeText(it) }
     }
 
     /**

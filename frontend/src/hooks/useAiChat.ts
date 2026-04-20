@@ -77,13 +77,17 @@ export function useAiChat(): UseAiChatReturn {
 
         // 获取用户 ID
         const userId = getAccountIdFromToken();
+        console.log('👤 用户 ID:', userId);
 
         // 构建 WebSocket URL
         let wsUrl = `${WS_BASE}/ws/v1/ai-chat?uuid=${encodeURIComponent(uuid)}`;
         wsUrl += `&has_file=${hasFile}`;
         if (userId !== null) {
             wsUrl += `&user_id=${userId}`;
+        } else {
+            console.warn('⚠️ 未获取到用户 ID，可能未登录或 token 无效');
         }
+        console.log('🔗 WebSocket URL:', wsUrl);
 
         const ws = new WebSocket(wsUrl);
         wsRef.current = ws;
