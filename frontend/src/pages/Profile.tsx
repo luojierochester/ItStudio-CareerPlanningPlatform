@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { resumeApi } from '../api/resume';
 import { fetchResumeDetail } from '../api/mock';
 import { useAiChat } from '../hooks/useAiChat';
@@ -8,6 +9,7 @@ import type { ResumeDetail } from '../api/types';
 const ACCEPTED_TYPES = '.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 const Profile: React.FC = () => {
+    const navigate = useNavigate();
     const [currentStatus, setCurrentStatus] = useState<'upload' | 'parsing' | 'ready'>('upload');
     const [chatInput, setChatInput] = useState('');
     const [uploadError, setUploadError] = useState('');
@@ -213,6 +215,12 @@ const Profile: React.FC = () => {
                             />
                             <button className="send-btn" onClick={handleSend}>发送</button>
                         </div>
+                    </div>
+
+                    <div className="goto-panorama-bar">
+                        <button className="btn-goto-panorama" onClick={() => navigate('/panorama')}>
+                            🚀 简历录入完毕，前往全景解析舱
+                        </button>
                     </div>
 
                 </div>
