@@ -658,3 +658,653 @@ html {
     transform: translateY(-6px);
   }
 }
+
+/* ============================================================
+   GlobalConfigFab — 全局设置浮动按钮 & 面板
+   ============================================================ */
+
+/* 呼吸灯动画 */
+@keyframes gcfBreath {
+
+  0%,
+  100% {
+    box-shadow: 0 0 8px var(--primary-color, #0ea5e9);
+  }
+
+  50% {
+    box-shadow: 0 0 22px var(--primary-color, #0ea5e9), 0 0 40px rgba(14, 165, 233, 0.25);
+  }
+}
+
+/* 面板滑入 */
+@keyframes gcfSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.gcf-wrapper {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  z-index: 99999;
+}
+
+/* FAB 按钮 */
+.gcf-fab {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--primary-color, #0ea5e9);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--primary-color, #0ea5e9);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+  animation: gcfBreath 3s ease-in-out infinite;
+}
+
+.gcf-fab:hover {
+  transform: rotate(180deg) scale(1.12);
+}
+
+.gcf-fab--open {
+  animation: none;
+  box-shadow: 0 0 18px var(--primary-color, #0ea5e9);
+  transform: rotate(180deg);
+}
+
+/* 设置面板 */
+.gcf-panel {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  right: 0;
+  width: 330px;
+  padding: 1.4rem 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  transform-origin: bottom right;
+  animation: gcfSlideIn 0.25s ease-out;
+}
+
+.gcf-title {
+  margin: 0 0 1rem 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--primary-color, #0ea5e9);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 0.6rem;
+}
+
+.gcf-item {
+  margin-bottom: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.gcf-item:last-child {
+  margin-bottom: 0;
+}
+
+.gcf-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.gcf-select {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  background: rgba(241, 245, 249, 0.9);
+  color: #1e293b;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  transition: border-color 0.2s;
+}
+
+.gcf-select:focus {
+  border-color: var(--primary-color, #0ea5e9);
+}
+
+.gcf-color {
+  width: 100%;
+  height: 38px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+}
+
+/* 深浅切换滑块 */
+.gcf-theme-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(241, 245, 249, 0.9);
+  border-radius: 30px;
+  padding: 4px;
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  height: 38px;
+  user-select: none;
+}
+
+.gcf-switch-bg {
+  position: absolute;
+  width: 50%;
+  height: calc(100% - 8px);
+  background: var(--primary-color, #0ea5e9);
+  border-radius: 30px;
+  transition: transform 0.3s ease;
+  z-index: 1;
+  left: 4px;
+}
+
+.gcf-switch-bg.is-light {
+  transform: translateX(calc(100% - 4px));
+}
+
+.gcf-switch-label {
+  flex: 1;
+  text-align: center;
+  font-size: 0.8rem;
+  z-index: 2;
+  color: #94a3b8;
+  transition: color 0.3s;
+  white-space: nowrap;
+}
+
+.gcf-switch-label.active {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ============================================================
+   Dark Mode 覆盖层
+   ============================================================ */
+body.dark-mode {
+  color: #f1f5f9;
+}
+
+body.dark-mode .glass-sidebar {
+  background: rgba(15, 23, 42, 0.75);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .glass-sidebar .logo-title {
+  -webkit-text-fill-color: #e2e8f0;
+}
+
+body.dark-mode .nav-item {
+  color: #94a3b8;
+}
+
+body.dark-mode .nav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+}
+
+body.dark-mode .nav-item.active {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--primary-color, #0ea5e9);
+  box-shadow: none;
+}
+
+body.dark-mode .glass-main {
+  color: #e2e8f0;
+}
+
+body.dark-mode .glass-main h1,
+body.dark-mode .glass-main h2,
+body.dark-mode .glass-main h3,
+body.dark-mode .glass-main h4 {
+  color: #f1f5f9;
+}
+
+body.dark-mode .glass-main p {
+  color: #94a3b8;
+}
+
+body.dark-mode .glass-panel {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+}
+
+body.dark-mode .ai-omnibar {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .ai-omnibar input {
+  color: #e2e8f0;
+}
+
+body.dark-mode .ai-send-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+/* FAB dark overrides */
+body.dark-mode .gcf-fab {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: var(--primary-color, #0ea5e9);
+}
+
+body.dark-mode .gcf-panel {
+  background: rgba(15, 23, 42, 0.88);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .gcf-title {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .gcf-label {
+  color: #94a3b8;
+}
+
+body.dark-mode .gcf-select {
+  background: rgba(30, 41, 59, 0.9);
+  color: #f1f5f9;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .gcf-theme-switch {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================
+   六维能力数值网格 (全息竞争力卡片内)
+   ============================================================ */
+.radar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.radar-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.06) 0%, rgba(99, 102, 241, 0.06) 100%);
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.radar-grid-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.12);
+}
+
+.radar-grid-icon {
+  font-size: 14px;
+}
+
+.radar-grid-val {
+  font-size: 20px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+}
+
+.radar-grid-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* ============================================================
+   岗位卡片 (可点击)
+   ============================================================ */
+.job-card {
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s;
+}
+
+.job-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.1);
+  border-color: rgba(14, 165, 233, 0.35);
+}
+
+.job-tag {
+  padding: 2px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.job-card:hover .job-tag {
+  border-color: rgba(14, 165, 233, 0.4);
+  color: #0ea5e9;
+}
+
+/* ============================================================
+   岗位详情弹窗 (半透明毛玻璃)
+   ============================================================ */
+@keyframes jdFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes jdSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.jd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: jdFadeIn 0.2s ease-out;
+}
+
+.jd-modal {
+  width: 520px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(17, 25, 40, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35), 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  color: #e2e8f0;
+  animation: jdSlideUp 0.3s ease-out;
+  overflow: hidden;
+}
+
+.jd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.jd-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #0ea5e9, #a78bfa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.jd-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.jd-close:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.jd-body {
+  padding: 16px 24px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.jd-section {
+  margin-bottom: 20px;
+}
+
+.jd-section:last-child {
+  margin-bottom: 0;
+}
+
+.jd-section-title {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* 综合评分大圆 */
+.jd-total-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(99, 102, 241, 0.2));
+  border: 2px solid rgba(14, 165, 233, 0.4);
+  box-shadow: 0 0 30px rgba(14, 165, 233, 0.15);
+}
+
+.jd-total-num {
+  font-size: 28px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #38bdf8, #a78bfa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+
+.jd-total-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* 技能标签 (赛博朋克风) */
+.jd-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.jd-tag {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(14, 165, 233, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  letter-spacing: 0.3px;
+  transition: all 0.2s;
+}
+
+.jd-tag:hover {
+  background: rgba(14, 165, 233, 0.25);
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.2);
+}
+
+/* 能力评分进度条 */
+.jd-score-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.jd-score-label {
+  width: 60px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.jd-bar-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.jd-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #0ea5e9, #6366f1);
+  transition: width 0.6s ease-out;
+}
+
+.jd-score-value {
+  width: 40px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #e2e8f0;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* 地理分布条 */
+.jd-loc-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.jd-loc-city {
+  width: 72px;
+  font-size: 12px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.jd-loc-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.jd-loc-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  transition: width 0.6s ease-out;
+}
+
+.jd-loc-pct {
+  width: 44px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #e2e8f0;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.jd-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #94a3b8;
+}
+
+/* ===== Dark Mode: 岗位卡片 & 弹窗适配 ===== */
+body.dark-mode .job-card {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .job-card h4 {
+  color: #f1f5f9;
+}
+
+body.dark-mode .job-card p {
+  color: #94a3b8;
+}
+
+body.dark-mode .job-tag {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+body.dark-mode .job-card:hover .job-tag {
+  border-color: rgba(14, 165, 233, 0.4);
+  color: #38bdf8;
+}
+
+body.dark-mode .radar-grid-item {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(99, 102, 241, 0.08));
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .radar-grid-label {
+  color: #94a3b8;
+}

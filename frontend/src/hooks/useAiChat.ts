@@ -3,7 +3,10 @@ import type { ChatMessage } from '../api/types';
 import { chatApi } from '../api/chat';
 
 /* ---------- 常量 ---------- */
-const WS_BASE = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
+// 开发环境走 Vite proxy（当前 host），生产环境直连后端 WS 地址
+const WS_BASE = import.meta.env.PROD
+    ? import.meta.env.VITE_WS_BASE_URL
+    : `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
 const HEARTBEAT_INTERVAL = 30_000; // 30 s
 const RECONNECT_BASE_DELAY = 2_000; // 首次重连延迟
 const MAX_RECONNECT_DELAY = 30_000;
