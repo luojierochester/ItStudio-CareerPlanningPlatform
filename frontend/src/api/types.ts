@@ -51,6 +51,35 @@ export interface DashboardData {
     radar: { dimension: string; value: number }[];
 }
 
+/* ===== AI 雷达维度评分（后端 7 字段 JSON） ===== */
+export interface RadarScore {
+    professionalSkill: number;
+    projectExperience: number;
+    communication: number;
+    stressResistance: number;
+    learningAbility: number;
+    innovation: number;
+    totalScore: number;
+}
+
+/* ===== 岗位详情弹窗数据 ===== */
+export interface JobDetailData {
+    jobTitle: string;
+    location: Record<string, number>;
+    workHours: string;
+    scoring: {
+        skills: string[];
+        certRequirements: string[];
+        internScore: number;
+        communicationScore: number;
+        stressScore: number;
+        learningScore: number;
+        innovationScore: number;
+        totalScore: number;
+    };
+    salary: string;
+}
+
 /* ===== 岗位匹配 ===== */
 export interface MatchedJob {
     id: string | number;

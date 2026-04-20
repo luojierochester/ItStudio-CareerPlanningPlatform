@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 // 1. 创建 Axios 实例
+// 开发环境走 Vite proxy（相对路径 /api），生产环境直连后端真实地址
+const isProd = import.meta.env.PROD;
 const request = axios.create({
-    // 配合 Vite proxy，发往 /api 将被代理到 localhost:8080
-    baseURL: '/api',
+    baseURL: isProd ? `${import.meta.env.VITE_API_BASE_URL}/api` : '/api',
     timeout: 10000,
 });
 
