@@ -1,7 +1,9 @@
--- 创建 user_file 表
+-- 删除旧表并重建 user_file 表
 -- 用于存储用户上传的文件 UUID
 
-CREATE TABLE IF NOT EXISTS user_file (
+DROP TABLE IF EXISTS user_file;
+
+CREATE TABLE user_file (
     id INT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID，关联 account 表',
     test_file CHAR(36) NULL COMMENT '测试文件UUID',
     resume_file CHAR(36) NULL COMMENT '简历文件UUID'
