@@ -40,3 +40,8 @@ mybatis-plus:
 app:
   file:
     direction: /root/temp/saveFileTest
+
+  flow-limit:
+    count: 1000
+    limit-time: 3
+    ban-time: 60
