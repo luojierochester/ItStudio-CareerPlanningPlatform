@@ -1,49 +1,51 @@
-from sentence_transformers import SentenceTransformer, util
+# -*- coding: utf-8 -*-
+import joblib
+import numpy as np
 import pandas as pd
-import json
 
-def main():
+MODEL_PATH = "models/lgb/lgb_model.joblib"
 
-    MODEL_PATH = "paraphrase-multilingual-MiniLM-L12-v2"
-    JOBS_CSV_PATH = "data/jobs.csv"  
-    RESUME_TEXT = "我有两年 PyTorch 项目经验，熟悉深度学习"  
-    RECALL_K = 10  
+def load_model():
+    data = joblib.load(MODEL_PATH)
+    return data["model"], data["feature_names"]
 
-    print("正在加载模型...")
-    model = SentenceTransformer(MODEL_PATH)
-    print("模型加载完成！")
+def predict_single(features: dict):
+    model, feats = load_model()
+    x = np.array([features[f] for f in feats]).reshape(1, -1)
+    score = model.predict(x)[0]
+    return {
+        "match_score": round(float(score), 4),
+        "recommend": score >= 0.5,
+        "label": "推荐" if score >= 0.5 else "不推荐"
+    }
 
-    
-    print(f"正在读取岗位数据: {JOBS_CSV_PATH}")
-    jobs_df = pd.read_csv(JOBS_CSV_PATH)
-    print(f"成功读取 {len(jobs_df)} 条岗位数据！")
-
-    
-    resume_embedding = model.encode(RESUME_TEXT, convert_to_tensor=True)
-    
-    results = []
-    for idx, row in jobs_df.iterrows():
-        job_id = row["job_id"]
-        job_title = row["title"]
-        job_desc = row["description"]
-        job_full_text = f"{job_title}\n{job_desc}" 
-        
-        job_embedding = model.encode(job_full_text, convert_to_tensor=True)
-        
-        sim_score = util.cos_sim(resume_embedding, job_embedding).item()
-        
-
-        results.append({
-            "uuid": f"job_{job_id}",  
-            "job_text": job_full_text[:300] + "..." if len(job_full_text) > 300 else job_full_text,
-            "sim": round(sim_score, 6),
-            "lgb_score": None  
-        })
-
-    results_sorted = sorted(results, key=lambda x: x["sim"], reverse=True)[:RECALL_K]
-
-    print("\n=== 简历岗位推荐结果 ===")
-    print(json.dumps(results_sorted, ensure_ascii=False, indent=2))
+def batch_predict(df_features):
+    model, feats = load_model()
+    X = df_features[feats]
+    scores = model.predict(X)
+    df_features["match_score"] = scores
+    df_features["recommend"] = scores >= 0.5
+    return df_features.sort_values("match_score", ascending=False)
 
 if __name__ == "__main__":
-    main()
+    sample = {
+        "sim": 0.88,
+        "skill_match": 5,
+        "skill_jaccard": 0.75,
+        "skill_coverage": 0.7,
+        "title_kw_score": 0.8,
+        "industry_match": 1.0,
+        "has_internship": 1,
+        "has_certificate": 1,
+        "has_project": 1,
+        "has_competition": 1,
+        "has_learning_evidence": 1,
+        "has_communication_evidence": 1,
+        "has_pressure_evidence": 1,
+        "job_title_len": 18,
+        "job_resp_len": 200,
+        "job_content_len": 180,
+        "job_req_len": 150,
+        "job_full_text_len": 550
+    }
+    print(predict_single(sample))
