@@ -5,11 +5,13 @@ from typing import Optional, Dict, Literal
 import json
 import os
 import asyncio
+import re
 from pathlib import Path
 from openai import AsyncOpenAI
 import logging
 import PyPDF2
 from docx import Document
+import httpx
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -58,6 +60,9 @@ DB_NAME = os.getenv("DB_NAME", "career_planning")
 BASE_DIR = Path(__file__).parent.parent
 PROMPT_DIR = BASE_DIR / "prompt"
 PROFILE_DIR = BASE_DIR / "profiles"
+
+# 后端 API 配置
+BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:8080/api")
 
 # 确保目录存在
 PROMPT_DIR.mkdir(exist_ok=True)
@@ -301,6 +306,74 @@ async def update_profile_with_ai(user_id: str, conversation_history: list):
     except Exception as e:
         logger.error(f"更新用户画像时出错: {e}")
 
+def parse_resume_update_commands(text: str) -> list:
+    """
+    从 AI 回复中解析简历更新指令
+    返回格式: [{"action": "add", "section": "skills", "content": [...]}]
+    """
+    commands = []
+    pattern = r'\[UPDATE_RESUME\](.*?)\[/UPDATE_RESUME\]'
+    matches = re.findall(pattern, text, re.DOTALL)
+
+    for match in matches:
+        try:
+            # 清理 JSON 字符串
+            json_str = match.strip()
+            if json_str.startswith("```json"):
+                json_str = json_str[7:]
+            if json_str.startswith("```"):
+                json_str = json_str[3:]
+            if json_str.endswith("```"):
+                json_str = json_str[:-3]
+            json_str = json_str.strip()
+
+            command = json.loads(json_str)
+            commands.append(command)
+            logger.info(f"解析到简历更新指令: {command}")
+        except json.JSONDecodeError as e:
+            logger.error(f"解析简历更新指令失败: {e}, 原始内容: {match}")
+
+    return commands
+
+async def apply_resume_updates(user_id: str, commands: list, auth_token: str = None):
+    """
+    应用简历更新指令到后端
+    """
+    if not commands:
+        return
+
+    try:
+        async with httpx.AsyncClient() as client:
+            headers = {}
+            if auth_token:
+                headers["Authorization"] = f"Bearer {auth_token}"
+
+            for cmd in commands:
+                action = cmd.get("action")
+                section = cmd.get("section")
+                content = cmd.get("content")
+
+                # 调用后端 API 更新简历
+                response = await client.post(
+                    f"{BACKEND_API_URL}/v1/resume/update",
+                    json={
+                        "user_id": user_id,
+                        "action": action,
+                        "section": section,
+                        "content": content
+                    },
+                    headers=headers,
+                    timeout=10.0
+                )
+
+                if response.status_code == 200:
+                    logger.info(f"简历更新成功: {section} - {action}")
+                else:
+                    logger.warning(f"简历更新失败: {response.status_code} - {response.text}")
+
+    except Exception as e:
+        logger.error(f"应用简历更新时出错: {e}")
+
 # ===== API端点 =====
 @app.get("/health")
 async def health_check():
@@ -418,7 +491,7 @@ async def websocket_chat(
                 stream = await client.chat.completions.create(
                     model=model,
                     messages=conversation_history,
-                    temperature=0.7,
+                    temperature=0.3,  # 降低温度以提高一致性和聚焦度
                     stream=True
                 )
 
@@ -432,6 +505,18 @@ async def websocket_chat(
 
                 # 添加完整回复到对话历史
                 conversation_history.append({"role": "assistant", "content": full_response})
+
+                # 解析并应用简历更新指令
+                update_commands = parse_resume_update_commands(full_response)
+                if update_commands and user_id:
+                    # 异步应用更新（不阻塞对话）
+                    asyncio.create_task(apply_resume_updates(user_id, update_commands))
+
+                    # 从回复中移除更新指令标记，只保留对话内容
+                    clean_response = re.sub(r'\[UPDATE_RESUME\].*?\[/UPDATE_RESUME\]', '', full_response, flags=re.DOTALL).strip()
+                    if clean_response != full_response:
+                        # 更新对话历史为清理后的内容
+                        conversation_history[-1]["content"] = clean_response
 
                 # 每轮对话后更新用户画像
                 if user_id and len(conversation_history) >= 4:  # 至少有2轮对话后才更新

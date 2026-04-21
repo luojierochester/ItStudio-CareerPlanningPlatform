@@ -94,6 +94,114 @@ class ResumeService(
     }
 
     /**
+     * 更新简历的某个部分（由 AI 调用）
+     */
+    fun updateResume(header: String?, updateRequest: Map<String, Any>): Mono<ResumeParseVO> {
+        val accountId = getAccountIdFromHeader(header)
+            ?: return Mono.error(RuntimeException("Invalid token"))
+
+        val action = updateRequest["action"] as? String ?: return Mono.error(RuntimeException("Missing action"))
+        val section = updateRequest["section"] as? String ?: return Mono.error(RuntimeException("Missing section"))
+        val content = updateRequest["content"]
+
+        return redisTemplate.opsForValue()
+            .get("${Const.RESUME_TEXT_CACHE}$accountId")
+            .defaultIfEmpty("")
+            .flatMap { rawText ->
+                val currentResume = if (rawText.isNotEmpty()) parseResumeText(rawText) else ResumeParseVO()
+                val updatedResume = applyResumeUpdate(currentResume, action, section, content)
+
+                // 将更新后的简历转换回文本格式并缓存
+                val updatedText = resumeToText(updatedResume)
+                redisTemplate.opsForValue()
+                    .set("${Const.RESUME_TEXT_CACHE}$accountId", updatedText)
+                    .thenReturn(updatedResume)
+            }
+    }
+
+    /**
+     * 应用简历更新
+     */
+    private fun applyResumeUpdate(resume: ResumeParseVO, action: String, section: String, content: Any?): ResumeParseVO {
+        return when (section) {
+            "name" -> resume.copy(name = content as? String ?: resume.name)
+            "targetRole" -> resume.copy(targetRole = content as? String ?: resume.targetRole)
+            "education" -> resume.copy(education = content as? String ?: resume.education)
+            "skills" -> {
+                val newSkills = when (content) {
+                    is List<*> -> content.filterIsInstance<String>()
+                    is String -> listOf(content)
+                    else -> emptyList()
+                }
+                when (action) {
+                    "add" -> resume.copy(skills = (resume.skills + newSkills).distinct())
+                    "update" -> resume.copy(skills = newSkills)
+                    "delete" -> resume.copy(skills = resume.skills.filter { it !in newSkills })
+                    else -> resume
+                }
+            }
+            "projects" -> {
+                when (action) {
+                    "add" -> {
+                        val newProject = when (content) {
+                            is Map<*, *> -> ProjectItem(
+                                title = content["title"] as? String ?: "",
+                                desc = content["desc"] as? String ?: ""
+                            )
+                            else -> null
+                        }
+                        if (newProject != null) {
+                            resume.copy(projects = resume.projects + newProject)
+                        } else resume
+                    }
+                    "update" -> {
+                        val projectList = when (content) {
+                            is List<*> -> content.mapNotNull { item ->
+                                (item as? Map<*, *>)?.let {
+                                    ProjectItem(
+                                        title = it["title"] as? String ?: "",
+                                        desc = it["desc"] as? String ?: ""
+                                    )
+                                }
+                            }
+                            else -> emptyList()
+                        }
+                        resume.copy(projects = projectList)
+                    }
+                    "delete" -> {
+                        val titleToDelete = (content as? Map<*, *>)?.get("title") as? String
+                        resume.copy(projects = resume.projects.filter { it.title != titleToDelete })
+                    }
+                    else -> resume
+                }
+            }
+            else -> resume
+        }
+    }
+
+    /**
+     * 将简历对象转换为文本格式（用于缓存）
+     */
+    private fun resumeToText(resume: ResumeParseVO): String {
+        val sb = StringBuilder()
+        if (resume.name.isNotEmpty()) sb.append("姓名：${resume.name}\n")
+        if (resume.targetRole.isNotEmpty()) sb.append("求职意向：${resume.targetRole}\n")
+        if (resume.education.isNotEmpty()) sb.append("教育背景：${resume.education}\n")
+        if (resume.skills.isNotEmpty()) {
+            sb.append("\n技能：\n")
+            resume.skills.forEach { sb.append("- $it\n") }
+        }
+        if (resume.projects.isNotEmpty()) {
+            sb.append("\n项目经历：\n")
+            resume.projects.forEach { project ->
+                sb.append("\n${project.title}\n")
+                sb.append("${project.desc}\n")
+            }
+        }
+        return sb.toString()
+    }
+
+    /**
      * 获取能力看板数据（优先走 algorithm 服务，降级走本地关键词提取）
      */
     fun getDashboard(header: String?): Mono<DashboardVO> {

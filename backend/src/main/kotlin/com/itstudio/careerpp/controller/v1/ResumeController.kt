@@ -51,6 +51,25 @@ class ResumeController(
     }
 
     /**
+     * POST /api/v1/resume/update
+     * 更新简历的某个部分（由 AI 调用）
+     */
+    @PostMapping("/update")
+    fun updateResume(
+        exchange: ServerWebExchange,
+        @RequestBody updateRequest: Map<String, Any>
+    ): Mono<RestBean<Any?>> {
+        val header = exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION)
+        logger.info("Resume update request: $updateRequest")
+        return resumeService.updateResume(header, updateRequest)
+            .map { RestBean.success<Any?>(it) }
+            .onErrorResume { e ->
+                logger.warn("Resume update failed: ${e.message}")
+                Mono.just(RestBean.failure(500, null, e.message))
+            }
+    }
+
+    /**
      * GET /api/v1/resume/dashboard
      * 获取六维能力看板数据
      */
