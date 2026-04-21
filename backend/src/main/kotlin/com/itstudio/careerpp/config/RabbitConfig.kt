@@ -4,6 +4,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.MessageProperties
+import org.springframework.amqp.core.Queue
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.core.RabbitTemplate
@@ -16,6 +17,9 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class RabbitConfig {
+
+    @Bean
+    fun mailQueue(): Queue = Queue("mail", true)  // durable=true，重启后队列不丢失
 
     @Bean
     fun messageConverter(@Qualifier("kotlinxSerializationJson") json: Json): MessageConverter =

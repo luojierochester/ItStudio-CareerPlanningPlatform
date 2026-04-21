@@ -133,113 +133,116 @@ const Profile: React.FC = () => {
             )}
 
             {currentStatus === 'ready' && (
-                <div className="workspace-split">
+                <>
+                    <div className="workspace-split">
 
-                    <div className="left-preview glass-panel">
-                        <div className="panel-header">
-                            <span className="title">全息简历模型</span>
-                            <span className="status-tag">实时同步中</span>
-                        </div>
+                        <div className="left-preview glass-panel">
+                            <div className="panel-header">
+                                <span className="title">全息简历模型</span>
+                                <span className="status-tag">实时同步中</span>
+                            </div>
 
-                        <div className="resume-paper">
-                            {resumeData ? (
-                                <>
-                                    <header className="resume-head">
-                                        <h1>{resumeData.name}</h1>
-                                        <p className="target-role">意向岗位：{resumeData.targetRole}</p>
-                                        <p className="text-muted">{resumeData.education}</p>
-                                    </header>
+                            <div className="resume-paper">
+                                {resumeData ? (
+                                    <>
+                                        <header className="resume-head">
+                                            <h1>{resumeData.name}</h1>
+                                            <p className="target-role">意向岗位：{resumeData.targetRole}</p>
+                                            <p className="text-muted">{resumeData.education}</p>
+                                        </header>
 
-                                    <section className="resume-section">
-                                        <h3>核心技能矩阵</h3>
-                                        <div className="skill-tags">
-                                            {resumeData.skills.map(skill => (
-                                                <span key={skill} className="skill-tag">{skill}</span>
-                                            ))}
-                                            <button className="add-skill-btn">+ AI 挖掘更多</button>
-                                        </div>
-                                    </section>
-
-                                    <section className="resume-section">
-                                        <h3>项目实战经历</h3>
-                                        {resumeData.projects.map((proj, idx) => (
-                                            <div key={idx} className="project-item highlight-warn">
-                                                <div className="proj-head">
-                                                    <h4>{proj.title}</h4>
-                                                    <button className="ai-fix-btn">✨ AI 润色</button>
-                                                </div>
-                                                <p className="proj-desc">{proj.desc}</p>
+                                        <section className="resume-section">
+                                            <h3>核心技能矩阵</h3>
+                                            <div className="skill-tags">
+                                                {resumeData.skills.map(skill => (
+                                                    <span key={skill} className="skill-tag">{skill}</span>
+                                                ))}
+                                                <button className="add-skill-btn">+ AI 挖掘更多</button>
                                             </div>
-                                        ))}
-                                    </section>
-                                </>
-                            ) : (
-                                <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
-                                    <p>暂无简历数据，请先上传简历或让 AI 引导你创建</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                                        </section>
 
-                    <div className="right-copilot glass-panel">
-                        <div className="panel-header">
-                            <span className="title"><i className="ai-icon">✨</i> 简历辅导引擎</span>
-                            <span style={{
-                                fontSize: '12px',
-                                fontWeight: 600,
-                                color: statusColor[status],
-                                background: `${statusColor[status]}18`,
-                                padding: '4px 10px',
-                                borderRadius: '12px',
-                            }}>
-                                {statusLabel[status]}
-                            </span>
-                        </div>
-
-                        <div className="chat-flow">
-                            {messages.length === 0 && (
-                                <div className="chat-bubble ai-bubble">
-                                    <div className="avatar">🤖</div>
-                                    <div className="message-content">你好！我是你的 AI 简历辅导助手。有什么需要帮你优化的吗？✨</div>
-                                </div>
-                            )}
-                            {messages.map((msg, index) => (
-                                <div key={index} className={`chat-bubble ${msg.role === 'ai' ? 'ai-bubble' : 'user-bubble'}`}>
-                                    <div className="avatar">{msg.role === 'ai' ? '🤖' : '🧑‍🎓'}</div>
-                                    <div className="message-content">
-                                        {msg.role === 'ai' ? (
-                                            <>
-                                                <div className="formatted-ai" dangerouslySetInnerHTML={{ __html: formatChatContent(msg.content) }} />
-                                                {msg.streaming && <span className="typing-cursor">▍</span>}
-                                            </>
-                                        ) : (
-                                            msg.content
-                                        )}
+                                        <section className="resume-section">
+                                            <h3>项目实战经历</h3>
+                                            {resumeData.projects.map((proj, idx) => (
+                                                <div key={idx} className="project-item highlight-warn">
+                                                    <div className="proj-head">
+                                                        <h4>{proj.title}</h4>
+                                                        <button className="ai-fix-btn">✨ AI 润色</button>
+                                                    </div>
+                                                    <p className="proj-desc">{proj.desc}</p>
+                                                </div>
+                                            ))}
+                                        </section>
+                                    </>
+                                ) : (
+                                    <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
+                                        <p>暂无简历数据，请先上传简历或让 AI 引导你创建</p>
                                     </div>
-                                </div>
-                            ))}
-                            <div ref={chatEndRef} />
+                                )}
+                            </div>
                         </div>
 
-                        <div className="chat-input-area">
-                            <input
-                                type="text"
-                                value={chatInput}
-                                onChange={(e) => setChatInput(e.target.value)}
-                                onKeyDown={(e) => { if (e.key === 'Enter') handleSend(); }}
-                                placeholder="告诉 AI 你的想法，比如：'我在学生会做过外联'..."
-                            />
-                            <button className="send-btn" onClick={handleSend}>发送</button>
+                        <div className="right-copilot glass-panel">
+                            <div className="panel-header">
+                                <span className="title"><i className="ai-icon">✨</i> 简历辅导引擎</span>
+                                <span style={{
+                                    fontSize: '12px',
+                                    fontWeight: 600,
+                                    color: statusColor[status],
+                                    background: `${statusColor[status]}18`,
+                                    padding: '4px 10px',
+                                    borderRadius: '12px',
+                                }}>
+                                    {statusLabel[status]}
+                                </span>
+                            </div>
+
+                            <div className="chat-flow">
+                                {messages.length === 0 && (
+                                    <div className="chat-bubble ai-bubble">
+                                        <div className="avatar">🤖</div>
+                                        <div className="message-content">你好！我是你的 AI 简历辅导助手。有什么需要帮你优化的吗？✨</div>
+                                    </div>
+                                )}
+                                {messages.map((msg, index) => (
+                                    <div key={index} className={`chat-bubble ${msg.role === 'ai' ? 'ai-bubble' : 'user-bubble'}`}>
+                                        <div className="avatar">{msg.role === 'ai' ? '🤖' : '🧑‍🎓'}</div>
+                                        <div className="message-content">
+                                            {msg.role === 'ai' ? (
+                                                <>
+                                                    <div className="formatted-ai" dangerouslySetInnerHTML={{ __html: formatChatContent(msg.content) }} />
+                                                    {msg.streaming && <span className="typing-cursor">▍</span>}
+                                                </>
+                                            ) : (
+                                                msg.content
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                                <div ref={chatEndRef} />
+                            </div>
+
+                            <div className="chat-input-area">
+                                <input
+                                    type="text"
+                                    value={chatInput}
+                                    onChange={(e) => setChatInput(e.target.value)}
+                                    onKeyDown={(e) => { if (e.key === 'Enter') handleSend(); }}
+                                    placeholder="告诉 AI 你的想法，比如：'我在学生会做过外联'..."
+                                />
+                                <button className="send-btn" onClick={handleSend}>发送</button>
+                            </div>
                         </div>
+
                     </div>
 
                     <div className="goto-panorama-bar">
                         <button className="btn-goto-panorama" onClick={() => navigate('/panorama')}>
-                            🚀 简历录入完毕，前往全景解析舱
+                            <span className="btn-icon">🚀</span>
+                            <span>简历录入完毕，前往全景解析舱</span>
                         </button>
                     </div>
-
-                </div>
+                </>
             )}
         </div>
     );
