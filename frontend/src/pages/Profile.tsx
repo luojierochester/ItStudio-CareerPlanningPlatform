@@ -34,7 +34,7 @@ const Profile: React.FC = () => {
             try {
                 const updated = await resumeApi.getProfile();
                 setResumeData(updated);
-            } catch (e) {
+            } catch {
                 // 忽略错误，继续轮询
             }
         }, 3000); // 每 3 秒轮询一次
